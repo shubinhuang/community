@@ -1,4 +1,7 @@
 .idea
+.mvn
 target
 logs
-.mvn/wrapper/*.jar
+*.iml
+mvnw
+mvnw.cmd

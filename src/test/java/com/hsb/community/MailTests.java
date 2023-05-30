@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -15,8 +17,19 @@ public class MailTests {
     @Autowired
     private MailClient mailClient;
 
+    @Autowired
+    private TemplateEngine templateEngine;
+
     @Test
     public void testTextMail() {
         mailClient.sendMail("18859458156@163.com", "testText", "Hello World!");
+    }
+
+    @Test
+    public void testHtmlMail() {
+        Context context = new Context();
+        context.setVariable("username", "hsb");
+        String content = templateEngine.process("/mail/demo", context);
+        mailClient.sendMail("18859458156@163.com", "testHtml", content);
     }
 }

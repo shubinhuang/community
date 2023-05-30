@@ -5,3 +5,5 @@ logs
 *.iml
 mvnw
 mvnw.cmd
+*.properties
+

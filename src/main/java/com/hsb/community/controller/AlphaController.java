@@ -2,14 +2,17 @@ package com.hsb.community.controller;
 
 import com.hsb.community.config.AlphaConfig;
 import com.hsb.community.service.AlphaService;
+import com.hsb.community.util.CommunityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -150,7 +153,63 @@ public class AlphaController {
         return list;
     }
 
+    //  cookie示例  cookie存在浏览器不安全
+    //  服务器生成一个cookie放在响应头中给浏览器
+    @RequestMapping(path = "/cookie/set", method = RequestMethod.GET)
+    @ResponseBody
+    public String setCookie(HttpServletResponse response) {
+        // 创建cookie
+        Cookie cookie = new Cookie("code", CommunityUtil.generateUUID());
+        // 设置cookie生效的范围    该路径下才使用cookie
+        cookie.setPath("/community/alpha");
+        // 设置cookie的生存时间    默认关掉浏览器后就清楚cookie
+        cookie.setMaxAge(60 * 10);
+        // 发送cookie
+        response.addCookie(cookie);
 
+        return "set cookie";
+        /**
+         * 响应头中携带
+         * Set-Cookie: code=8935489f24fb477ebb3ff9cdf2ae1dc2; Max-Age=600; Expires=Mon, 05-Jun-2023 09:14:05 GMT; Path=/community/alpha
+         */
+    }
+
+    //  服务器获得响应头中的cookie
+    @RequestMapping(path = "/cookie/get", method = RequestMethod.GET)
+    @ResponseBody
+    public String getCookie(@CookieValue("code") String code) {
+        System.out.println(code);
+        return "get cookie";
+        /**
+         * 请求头中携带
+         * Cookie: code=8935489f24fb477ebb3ff9cdf2ae1dc2; Idea-d9d74068=8148838b-b960-4e63-b6e2-300e5474c4b4
+         */
+
+    }
+
+    // session示例  session寄语cookie实现  cookie(session id)
+
+    @RequestMapping(path = "/session/set", method = RequestMethod.GET)
+    @ResponseBody
+    public String setSession(HttpSession session) {
+        session.setAttribute("id", 1);
+        session.setAttribute("name", "Test");
+        return "set session";
+        /**
+         * Set-Cookie: JSESSIONID=322AF3204EBE64AAF1B81464FF6A0786; Path=/community; HttpOnly
+         */
+    }
+
+    @RequestMapping(path = "/session/get", method = RequestMethod.GET)
+    @ResponseBody
+    public String getSession(HttpSession session) {
+        System.out.println(session.getAttribute("id"));
+        System.out.println(session.getAttribute("name"));
+        return "get session";
+        /**
+         * Cookie: JSESSIONID=322AF3204EBE64AAF1B81464FF6A0786; Idea-d9d74068=8148838b-b960-4e63-b6e2-300e5474c4b4
+         */
+    }
 
 
 }
